@@ -1,0 +1,34 @@
+name: Deploy Docker container
+
+on:
+  workflow_call:
+
+jobs:
+  vm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: ZeroTier
+        uses: zerotier/github-action@v1.0.1
+        with:
+          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
+          auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restart docker container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 1m
+          script: |
+            if [ -d ${{ github.event.repository.name }} ]; then
+              cd ${{ github.event.repository.name }}
+              docker compose pull
+              docker compose up -d
+              docker image prune -f
+            fi
