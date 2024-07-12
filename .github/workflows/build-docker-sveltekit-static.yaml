@@ -23,7 +23,6 @@ jobs:
         with:
           repository: ukasyah-dev/actions
           ref: main
-          token: ${{ secrets.PAT_REPO }}
           path: actions
 
       - name: Set up Docker Buildx
