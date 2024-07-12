@@ -21,7 +21,7 @@ jobs:
       - name: Checkout actions repository
         uses: actions/checkout@v4
         with:
-          repository: emitra-co/actions
+          repository: ukasyah-dev/actions
           ref: main
           token: ${{ secrets.PAT_REPO }}
           path: actions
