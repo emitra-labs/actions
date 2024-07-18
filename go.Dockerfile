@@ -8,5 +8,5 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM gcr.io/distroless/base-debian12
 WORKDIR /runner
 COPY --from=builder /code/app ./app
-EXPOSE 3000
+EXPOSE 3000 4000
 CMD ["./app"]
