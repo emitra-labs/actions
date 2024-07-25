@@ -1,3 +1,3 @@
 # actions
 
-A collection of my reusable workflows for GitHub Actions.
+A collection of our reusable workflows for GitHub Actions.
