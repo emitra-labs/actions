@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}
-          image: ghcr.io/ukasyah-lab/{{ .Release.Name }}:{{ .Values.image.tag }}
+          image: ghcr.io/emitra-labs/{{ .Release.Name }}:{{ .Values.image.tag }}
           imagePullPolicy: Always
           ports:
             {{ if has "http" .Values.deploy.protocols }}
