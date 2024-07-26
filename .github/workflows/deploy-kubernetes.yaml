@@ -7,7 +7,7 @@ on:
         type: string
 
 jobs:
-  k8s:
+  kubernetes:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,6 +57,6 @@ jobs:
         run: |
           helm upgrade --install --history-max=1 \
             --set image.tag="main" \
-            --set deploy.ingress.host="${{ inputs.host }}" \
+            --set ingress.host="${{ inputs.host }}" \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm

@@ -1,4 +1,3 @@
-{{ if or .Values.deploy.host .Values.deploy.protocols }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,14 +10,6 @@ spec:
   selector:
     app: {{ .Release.Name }}
   ports:
-    {{ if or .Values.deploy.host (has "http" .Values.deploy.protocols) }}
     - name: http
       port: 3000
       targetPort: 3000
-    {{ end }}
-    {{ if has "grpc" .Values.deploy.protocols }}
-    - name: grpc
-      port: 4000
-      targetPort: 4000
-    {{ end }}
-{{ end }}
