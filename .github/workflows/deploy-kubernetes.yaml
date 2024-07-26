@@ -1,7 +1,10 @@
-name: Deploy Go app
+name: Deploy to Kubernetes
 
 on:
   workflow_call:
+    inputs:
+      host:
+        type: string
 
 jobs:
   k8s:
@@ -16,7 +19,7 @@ jobs:
       - name: Checkout actions repository
         uses: actions/checkout@v4
         with:
-          repository: ukasyah-lab/actions
+          repository: emitra-labs/actions
           ref: main
           token: ${{ secrets.PAT_REPO }}
           path: actions
@@ -35,13 +38,7 @@ jobs:
         id: app-version
         uses: mikefarah/yq@master
         with:
-          cmd: yq '.version' 'actions.yaml'
-
-      - name: Get host deployment
-        id: host
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq '.deploy.host' 'actions.yaml'
+          cmd: yq -r .version package.json
 
       - uses: azure/setup-helm@v4
 
@@ -61,6 +58,6 @@ jobs:
           helm upgrade --install --history-max=1 \
             -n default -f actions.yaml \
             --set image.tag="main" \
-            --set deploy.ingress.host="${{ steps.host.outputs.result }}" \
+            --set deploy.ingress.host="${{ inputs.host }}" \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm
