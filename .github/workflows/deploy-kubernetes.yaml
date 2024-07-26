@@ -3,9 +3,6 @@ name: Deploy Go app
 on:
   workflow_call:
 
-env:
-  BASE_DOMAIN: emitra.co
-
 jobs:
   k8s:
     runs-on: ubuntu-latest
@@ -40,11 +37,11 @@ jobs:
         with:
           cmd: yq '.version' 'actions.yaml'
 
-      - name: Get subdomain
-        id: subdomain
+      - name: Get host deployment
+        id: host
         uses: mikefarah/yq@master
         with:
-          cmd: yq '.deploy.subdomain' 'actions.yaml'
+          cmd: yq '.deploy.host' 'actions.yaml'
 
       - uses: azure/setup-helm@v4
 
@@ -59,32 +56,11 @@ jobs:
           export APP_VERSION="${{ steps.app-version.outputs.result }}"
           envsubst < actions/.helm/Chart.template.yaml > actions/.helm/Chart.yaml
 
-      - name: Deploy to development
+      - name: Deploy to default namespace
         run: |
-          ingressHost=""
-
-          if [ "${{ steps.subdomain.outputs.result }}" != "null" ]; then
-            ingressHost="${{ steps.subdomain.outputs.result }}.dev.${{ env.BASE_DOMAIN }}"
-          fi
-
           helm upgrade --install --history-max=1 \
-            -n development -f actions.yaml \
+            -n default -f actions.yaml \
             --set image.tag="main" \
-            --set deploy.ingress.host="$ingressHost" \
-            ${{ steps.app-name.outputs.repository-name }} \
-            actions/.helm
-
-      - name: Deploy to test
-        run: |
-          ingressHost=""
-
-          if [ "${{ steps.subdomain.outputs.result }}" != "null" ]; then
-            ingressHost="${{ steps.subdomain.outputs.result }}.test.${{ env.BASE_DOMAIN }}"
-          fi
-
-          helm upgrade --install --history-max=1 \
-            -n test -f actions.yaml \
-            --set image.tag="main" \
-            --set deploy.ingress.host="$ingressHost" \
+            --set deploy.ingress.host="${{ steps.host.outputs.result }}" \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm

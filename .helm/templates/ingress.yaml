@@ -1,0 +1,25 @@
+{{ if .Values.deploy.ingress.host }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: "cloudflare"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.deploy.ingress.host }}
+      secretName: {{ .Values.deploy.ingress.host }}
+  rules:
+    - host: {{ .Values.deploy.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Release.Name }}
+                port:
+                  number: 3000
+{{ end }}
