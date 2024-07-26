@@ -56,7 +56,6 @@ jobs:
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
-            -n default -f actions.yaml \
             --set image.tag="main" \
             --set deploy.ingress.host="${{ inputs.host }}" \
             ${{ steps.app-name.outputs.repository-name }} \
