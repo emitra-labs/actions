@@ -2,6 +2,13 @@ name: Build SvelteKit project as a Docker image
 
 on:
   workflow_call:
+    inputs:
+      adapter:
+        type: choice
+        default: static
+        options:
+          - node
+          - static
 
 env:
   REGISTRY: ghcr.io
@@ -67,7 +74,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: actions/svelte.Dockerfile
+          file: actions/svelte-${{ inputs.adapter }}.Dockerfile
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
