@@ -4,11 +4,8 @@ on:
   workflow_call:
     inputs:
       adapter:
-        type: choice
-        default: static
-        options:
-          - node
-          - static
+        default: 'static'
+        type: string
 
 env:
   REGISTRY: ghcr.io
