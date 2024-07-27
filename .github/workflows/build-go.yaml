@@ -21,7 +21,7 @@ jobs:
       - name: Checkout actions repository
         uses: actions/checkout@v4
         with:
-          repository: ukasyah-dev/actions
+          repository: emitra-labs/actions
           ref: main
           path: actions
 
