@@ -1,5 +1,11 @@
 image:
   tag: main
 
+envVars: false
+
+service:
+  http: true
+  grpc: false
+
 ingress:
   host: app.example.com

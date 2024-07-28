@@ -1,3 +1,4 @@
+{{ if or .Values.service.http .Values.service.grpc }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,6 +11,15 @@ spec:
   selector:
     app: {{ .Release.Name }}
   ports:
+    {{ if .Values.service.http }}
     - name: http
       port: 3000
       targetPort: 3000
+    {{ end }}
+
+    {{ if .Values.service.grpc }}
+    - name: grpc
+      port: 4000
+      targetPort: 4000
+    {{ end }}
+{{ end }}

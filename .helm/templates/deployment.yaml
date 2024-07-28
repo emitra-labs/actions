@@ -23,9 +23,29 @@ spec:
           image: ghcr.io/emitra-labs/{{ .Release.Name }}:{{ .Values.image.tag }}
           imagePullPolicy: Always
           ports:
+            {{ if .Values.service.http }}
             - containerPort: 3000
+            {{ end }}
+            
+            {{ if .Values.service.grpc }}
+            - containerPort: 4000
+            {{ end }}
+          
           readinessProbe:
+            {{ if .Values.service.http }}
             httpGet:
               path: /
               port: 3000
             initialDelaySeconds: 5
+            {{ else if .Values.service.grpc }}
+            grpc:
+              port: 4000
+            initialDelaySeconds: 5
+            {{ end }}
+
+          {{ if .Values.envVars }}
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-env-vars
+          {{ end }}
+

@@ -5,6 +5,15 @@ on:
     inputs:
       host:
         type: string
+      http:
+        type: boolean
+        default: true
+      grpc:
+        type: boolean
+        default: false
+      env-vars:
+        type: boolean
+        default: false
 
 jobs:
   kubernetes:
@@ -56,7 +65,9 @@ jobs:
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
+            --set envVars=${{ inputs.env-vars && 'true' || 'false' }} \
             --set image.tag="main" \
             --set ingress.host="${{ inputs.host }}" \
+            --set service.enabled=${{ (inputs.http || inputs.grpc) && 'true' || 'false' }} \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm
