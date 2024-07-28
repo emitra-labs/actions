@@ -36,7 +36,7 @@ jobs:
       - name: Create ~/.kube/config file
         run: |
           mkdir -p /home/runner/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" >> /home/runner/.kube/config
+          echo "${{ secrets.KUBECONFIG }}" >> /home/runner/.kube/config
 
       - name: Expose Maildev service
         if: ${{ inputs.maildev }}
