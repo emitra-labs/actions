@@ -40,24 +40,15 @@ jobs:
 
       - name: Expose Maildev service
         if: ${{ inputs.maildev }}
-        uses: vbem/k8s-port-forward@v1
-        with:
-          mappings: '1025:1025'
-          workload: 'svc/maildev'
+        run: kubectl port-forward svc/maildev 1025:1025 &
 
       - name: Expose PostgreSQL service
         if: ${{ inputs.postgresql }}
-        uses: vbem/k8s-port-forward@v1
-        with:
-          mappings: '5432:5432'
-          workload: 'svc/postgresql'
+        run: kubectl port-forward svc/postgresql 5432:5432 &
 
       - name: Expose RabbitMQ service
         if: ${{ inputs.rabbitmq }}
-        uses: vbem/k8s-port-forward@v1
-        with:
-          mappings: '5672:5672'
-          workload: 'svc/rabbitmq'
+        run: kubectl port-forward svc/rabbitmq 5672:5672 &
 
       - name: Install godotenv
         run: go install github.com/joho/godotenv/cmd/godotenv@latest
