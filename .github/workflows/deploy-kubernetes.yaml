@@ -7,7 +7,7 @@ on:
         type: string
       http:
         type: boolean
-        default: false
+        default: true
       grpc:
         type: boolean
         default: false
@@ -68,6 +68,7 @@ jobs:
             --set envVars=${{ inputs.env-vars && 'true' || 'false' }} \
             --set image.tag="main" \
             --set ingress.host="${{ inputs.host }}" \
-            --set service.enabled=${{ (inputs.http || inputs.grpc) && 'true' || 'false' }} \
+            --set service.http=${{ inputs.http && 'true' || 'false' }} \
+            --set service.grpc=${{ inputs.grpc && 'true' || 'false' }} \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm
