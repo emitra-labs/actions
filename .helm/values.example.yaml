@@ -1,5 +1,9 @@
-image:
-  tag: main
+deployment:
+  image:
+    tag: main
+  env:
+    - name: LOREM
+      value: IPSUM
 
 service:
   http: true
@@ -7,8 +11,3 @@ service:
 
 ingress:
   host: app.example.com
-
-deployment:
-  env:
-    - name: LOREM
-      value: IPSUM

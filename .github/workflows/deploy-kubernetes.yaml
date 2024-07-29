@@ -2,15 +2,6 @@ name: Deploy to Kubernetes
 
 on:
   workflow_call:
-    inputs:
-      host:
-        type: string
-      http:
-        type: boolean
-        default: true
-      grpc:
-        type: boolean
-        default: false
 
 jobs:
   kubernetes:
@@ -68,9 +59,5 @@ jobs:
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
-            --set image.tag="main" \
-            --set ingress.host="${{ inputs.host }}" \
-            --set service.http=${{ inputs.http && 'true' || 'false' }} \
-            --set service.grpc=${{ inputs.grpc && 'true' || 'false' }} \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm
