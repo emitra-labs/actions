@@ -9,3 +9,8 @@ service:
 
 ingress:
   host: app.example.com
+
+deployment:
+  env:
+    - name: LOREM
+      value: IPSUM

@@ -62,6 +62,12 @@ jobs:
           export APP_VERSION="${{ steps.app-version.outputs.result }}"
           envsubst < actions/.helm/Chart.template.yaml > actions/.helm/Chart.yaml
 
+      - name: Create values.yaml file
+        run: |
+          cat <<EOT >> ${{ github.workspace }}/actions/.helm/values.yaml
+          ${{ vars.HELM_VALUES }}
+          EOT
+
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
