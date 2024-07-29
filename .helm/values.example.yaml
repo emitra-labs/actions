@@ -1,8 +1,6 @@
 image:
   tag: main
 
-envVars: false
-
 service:
   http: true
   grpc: false

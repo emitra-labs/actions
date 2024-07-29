@@ -11,9 +11,6 @@ on:
       grpc:
         type: boolean
         default: false
-      env-vars:
-        type: boolean
-        default: false
 
 jobs:
   kubernetes:
@@ -71,7 +68,6 @@ jobs:
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
-            --set envVars=${{ inputs.env-vars && 'true' || 'false' }} \
             --set image.tag="main" \
             --set ingress.host="${{ inputs.host }}" \
             --set service.http=${{ inputs.http && 'true' || 'false' }} \

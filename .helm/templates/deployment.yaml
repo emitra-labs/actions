@@ -43,9 +43,8 @@ spec:
             initialDelaySeconds: 5
             {{ end }}
 
-          {{ if .Values.envVars }}
-          envFrom:
-            - secretRef:
-                name: {{ .Release.Name }}-env-vars
-          {{ end }}
 
+          {{ if .Values.deployment.env }}
+          env:
+            {{- toYaml .Values.deployment.env | nindent 12 }}
+          {{ end }}
