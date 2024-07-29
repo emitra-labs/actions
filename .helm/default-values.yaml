@@ -1,13 +1,11 @@
 deployment:
   image:
     tag: main
-  env:
-    - name: LOREM
-      value: IPSUM
+  env: []
 
 service:
   http: true
   grpc: false
 
 ingress:
-  host: app.example.com
+  host: ""

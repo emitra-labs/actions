@@ -52,12 +52,14 @@ jobs:
 
       - name: Create values.yaml file
         run: |
-          cat <<EOT >> ${{ github.workspace }}/actions/.helm/values.yaml
+          cat <<EOT >> ${{ github.workspace }}/actions/.helm/custom-values.yaml
           ${{ vars.HELM_VALUES }}
           EOT
 
       - name: Deploy to default namespace
         run: |
           helm upgrade --install --history-max=1 \
+            -f actions/.helm/default-values.yaml \
+            -f actions/.helm/custom-values.yaml \
             ${{ steps.app-name.outputs.repository-name }} \
             actions/.helm
