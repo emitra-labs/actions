@@ -26,8 +26,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 1m
           script: |
-            if [ -d ${{ github.event.repository.name }} ]; then
-              cd ${{ github.event.repository.name }}
+            projectDir="containers/${{ github.event.repository.name }}"
+
+            if [ -d $projectDir ]; then
+              cd $projectDir
               docker compose pull
               docker compose up -d
               docker image prune -f
