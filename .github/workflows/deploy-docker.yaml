@@ -2,6 +2,10 @@ name: Deploy Docker container
 
 on:
   workflow_call:
+    inputs:
+      group:
+        required: true
+        type: string
 
 jobs:
   docker:
@@ -26,7 +30,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 1m
           script: |
-            projectDir="containers/${{ github.event.repository.name }}"
+            projectDir="containers/${{ inputs.group }}/${{ github.event.repository.name }}"
 
             if [ -d $projectDir ]; then
               cd $projectDir
