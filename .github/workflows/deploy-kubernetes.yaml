@@ -2,6 +2,10 @@ name: Deploy to Kubernetes
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        default: "development"
+        type: string
 
 jobs:
   kubernetes:
@@ -10,11 +14,6 @@ jobs:
       contents: read
 
     steps:
-      - name: Determine deployment environment from context
-        run: |
-          # By default, deploy to development environment
-          echo "DEPLOYMENT_ENV=development" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -27,7 +26,7 @@ jobs:
 
       - name: Setup ZeroTier for development environment
         uses: zerotier/github-action@v1.0.3
-        if: env.DEPLOYMENT_ENV == 'development'
+        if: inputs.environment == 'development'
         with:
           network_id: ${{ secrets.DEV_ZEROTIER_NETWORK_ID }}
           auth_token: ${{ secrets.DEV_ZEROTIER_CENTRAL_TOKEN }}
@@ -47,7 +46,7 @@ jobs:
       - name: Create ~/.kube/config file
         run: |
           mkdir -p /home/runner/.kube
-          if [[ $DEPLOYMENT_ENV == "development" ]]; then
+          if [[ "${{ inputs.environment }}" == "development" ]]; then
             echo "${{ secrets.DEV_KUBE_CONFIG }}" >> /home/runner/.kube/config
           fi
           chmod 600 /home/runner/.kube/config
