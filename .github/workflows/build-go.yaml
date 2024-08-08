@@ -64,8 +64,7 @@ jobs:
         run: mv actions/.dockerignore .
 
       - name: Write ~/.netrc file
-        run: |
-          echo "${{ secrets.NETRC }}" >> /home/runner/.netrc
+        run: echo "${{ secrets.NETRC }}" >> /home/runner/.netrc
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
