@@ -10,6 +10,11 @@ jobs:
       contents: read
 
     steps:
+      - name: Determine deployment environment from context
+        run: |
+          # By default, deploy to development environment
+          echo "DEPLOYMENT_ENV=development" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -18,14 +23,14 @@ jobs:
         with:
           repository: emitra-labs/actions
           ref: main
-          token: ${{ secrets.PAT_REPO }}
           path: actions
 
-      - name: ZeroTier
+      - name: Setup ZeroTier for development environment
         uses: zerotier/github-action@v1.0.3
+        if: $DEPLOYMENT_ENV == "development"
         with:
-          network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
-          auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
+          network_id: ${{ secrets.DEV_ZEROTIER_NETWORK_ID }}
+          auth_token: ${{ secrets.DEV_ZEROTIER_CENTRAL_TOKEN }}
 
       - name: Get app name
         id: app-name
@@ -42,7 +47,10 @@ jobs:
       - name: Create ~/.kube/config file
         run: |
           mkdir -p /home/runner/.kube
-          echo "${{ secrets.KUBECONFIG }}" >> /home/runner/.kube/config
+          if [[ $DEPLOYMENT_ENV == "development" ]]; then
+            echo "${{ secrets.DEV_KUBE_CONFIG }}" >> /home/runner/.kube/config
+          fi
+          chmod 600 /home/runner/.kube/config
 
       - name: Create Chart.yaml file
         run: |
