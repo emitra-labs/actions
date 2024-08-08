@@ -43,8 +43,10 @@ spec:
             initialDelaySeconds: 5
             {{ end }}
 
-
           {{ if .Values.deployment.env }}
           env:
             {{- toYaml .Values.deployment.env | nindent 12 }}
           {{ end }}
+
+      imagePullSecrets:
+        - name: ghcr-login
