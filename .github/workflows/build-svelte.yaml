@@ -55,7 +55,7 @@ jobs:
           key: cache-${{ hashFiles('actions/sveltekit-static.Dockerfile') }}
 
       - name: inject cache into Docker
-        uses: reproducible-containers/buildkit-cache-dance@v3.1.0
+        uses: reproducible-containers/buildkit-cache-dance@v3.1.2
         with:
           cache-map: |
             {
