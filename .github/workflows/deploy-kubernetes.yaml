@@ -27,7 +27,7 @@ jobs:
 
       - name: Setup ZeroTier for development environment
         uses: zerotier/github-action@v1.0.3
-        if: $DEPLOYMENT_ENV == "development"
+        if: env.DEPLOYMENT_ENV == "development"
         with:
           network_id: ${{ secrets.DEV_ZEROTIER_NETWORK_ID }}
           auth_token: ${{ secrets.DEV_ZEROTIER_CENTRAL_TOKEN }}
