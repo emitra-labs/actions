@@ -2,6 +2,8 @@ deployment:
   image:
     tag: main
   env: []
+  volumes: []
+  volumeMounts: []
 
 service:
   http: true

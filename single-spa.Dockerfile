@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
   pnpm install --frozen-lockfile && pnpm build
 
 FROM busybox:1.36
-WORKDIR /runtime
+WORKDIR /dist
 COPY --from=builder /code/dist .
 EXPOSE 3000
 CMD ["busybox", "httpd", "-f", "-p", "3000"]

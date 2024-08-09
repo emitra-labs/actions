@@ -48,5 +48,15 @@ spec:
             {{- toYaml .Values.deployment.env | nindent 12 }}
           {{ end }}
 
+          {{ if .Values.deployment.volumeMounts }}
+          volumeMounts:
+            {{- toYaml .Values.deployment.volumeMounts | nindent 12 }}
+          {{ end }}
+
       imagePullSecrets:
         - name: ghcr-login
+
+      {{ if .Values.deployment.volumes }}
+      volumes:
+        {{- toYaml .Values.deployment.volumes | nindent 8 }}
+      {{ end }}
