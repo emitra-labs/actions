@@ -9,6 +9,6 @@ RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
 
 FROM busybox:1.36
 WORKDIR /runtime
-COPY --from=builder /code/build .
+COPY --from=builder /code/dist .
 EXPOSE 3000
 CMD ["busybox", "httpd", "-f", "-p", "3000"]
