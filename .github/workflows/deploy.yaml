@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  project-info:
+    uses: ./.github/workflows/get-project-info.yaml
+
+  build:
+    needs: [project-info]
+    uses: ./.github/workflows/build-docker.yaml
+    with:
+      cache-map: ${{ needs.project-info.outputs.cache-map }}
+      cache-path: ${{ needs.project-info.outputs.cache-path }}
+      dockerfile: ${{ needs.project-info.outputs.dockerfile }}
+    secrets: inherit

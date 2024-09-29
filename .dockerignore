@@ -1,0 +1,6 @@
+.git/
+.svelte-kit/
+actions/
+build/
+dist/
+node_modules/

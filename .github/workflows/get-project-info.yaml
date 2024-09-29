@@ -1,0 +1,68 @@
+name: Get project info
+
+on:
+  workflow_call:
+    outputs:
+      cache-map:
+        value: ${{ jobs.project-info.outputs.cache-map }}
+      cache-path:
+        value: ${{ jobs.project-info.outputs.cache-path }}
+      dockerfile:
+        value: ${{ jobs.project-info.outputs.dockerfile }}
+
+jobs:
+  project-info:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-map: ${{ steps.data.outputs.cache-map }}
+      cache-path: ${{ steps.data.outputs.cache-path }}
+      dockerfile: ${{ steps.data.outputs.dockerfile }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine project type
+        id: project-type
+        run: |
+          if [[ -f go.mod ]]; then
+            echo "type=go" >> $GITHUB_OUTPUT
+          elif [[ -f svelte.config.js ]]; then
+            echo "type=svelte" >> $GITHUB_OUTPUT
+          else
+            echo "Error: Could not determine project type"
+            exit 1
+          fi
+
+      - name: Determine output data
+        id: data
+        run: |
+          if [[ "${{ steps.project-type.outputs.type }}" == "go" ]]; then
+            echo 'cache-map<<EOF' >> $GITHUB_OUTPUT
+            echo '{' >> $GITHUB_OUTPUT
+            echo '  "go-build": "/root/.cache/go-build",' >> $GITHUB_OUTPUT
+            echo '  "go-pkg-mod": "/go/pkg/mod"' >> $GITHUB_OUTPUT
+            echo '}' >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+
+            echo 'cache-path<<EOF' >> $GITHUB_OUTPUT
+            echo 'go-build' >> $GITHUB_OUTPUT
+            echo 'go-pkg-mod' >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+
+            echo "dockerfile=actions/go.Dockerfile" >> $GITHUB_OUTPUT
+          elif [[ "${{ steps.project-type.outputs.type }}" == "svelte" ]]; then
+            echo 'cache-map<<EOF' >> $GITHUB_OUTPUT
+            echo '{' >> $GITHUB_OUTPUT
+            echo '  "pnpm-store": "/pnpm/store",' >> $GITHUB_OUTPUT
+            echo '  "svelte-kit": "/code/.svelte-kit"' >> $GITHUB_OUTPUT
+            echo '}' >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+
+            echo 'cache-path<<EOF' >> $GITHUB_OUTPUT
+            echo 'pnpm-store' >> $GITHUB_OUTPUT
+            echo 'svelte-kit' >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+
+            echo "dockerfile=actions/svelte.Dockerfile" >> $GITHUB_OUTPUT
+          fi
