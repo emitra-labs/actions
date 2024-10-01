@@ -1,0 +1,56 @@
+name: Deploy Docker container
+
+on:
+  workflow_call:
+    secrets:
+      SSH_HOST:
+        required: true
+      SSH_PORT:
+        required: true
+      SSH_USERNAME:
+        required: true
+      SSH_PRIVATE_KEY:
+        required: true
+
+jobs:
+  docker-container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Recreate docker container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 1m
+          script: |
+            containerName="${{ github.event.repository.name }}"
+            imageName="ghcr.io/${{ github.repository }}:main"
+            envFile="containers/${containerName}/.env"
+
+            docker rm -f $containerName
+            docker pull $imageName
+
+            if [ -f $envFile ]; then
+              echo "Deploying with env file: $envFile"
+
+              docker run -d \
+                --name $containerName \
+                --network main \
+                --restart unless-stopped \
+                --env-file $envFile \
+                $imageName
+            else
+              echo "$envFile not found, ignoring"
+
+              docker run -d \
+                --name $containerName \
+                --network main \
+                --restart unless-stopped \
+                $imageName
+            fi
+
+            docker image prune -f
