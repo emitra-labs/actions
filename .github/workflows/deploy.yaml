@@ -19,3 +19,12 @@ jobs:
       cache-path: ${{ needs.project-info.outputs.cache-path }}
       dockerfile: ${{ needs.project-info.outputs.dockerfile }}
     secrets: inherit
+
+  deploy:
+    needs: [project-info, build]
+    uses: ./.github/workflows/deploy-docker.yaml
+    secrets:
+      SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+      SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
+      SSH_USERNAME: ${{ secrets.DEV_SSH_USERNAME }}
+      SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
