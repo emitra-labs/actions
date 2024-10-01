@@ -2,15 +2,10 @@ name: Deploy Docker container
 
 on:
   workflow_call:
-    secrets:
-      SSH_HOST:
+    inputs:
+      environment:
         required: true
-      SSH_PORT:
-        required: true
-      SSH_USERNAME:
-        required: true
-      SSH_PRIVATE_KEY:
-        required: true
+        type: string
 
 jobs:
   docker-container:
@@ -18,14 +13,25 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Set environment PREFIX
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "development" ]; then
+            echo "PREFIX=DEV" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" == "test" ]; then
+            echo "PREFIX=TEST" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            echo "PREFIX=STAG" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "PREFIX=PROD" >> $GITHUB_ENV
+          fi
+
       - name: Recreate docker container
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          timeout: 1m
+          host: ${{ secrets[format('{0}_SSH_HOST', env.PREFIX)] }}
+          port: ${{ secrets[format('{0}_SSH_PORT', env.PREFIX)] }}
+          username: ${{ secrets[format('{0}_SSH_USERNAME', env.PREFIX)] }}
+          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', env.PREFIX)] }}
           script: |
             containerName="${{ github.event.repository.name }}"
             imageName="ghcr.io/${{ github.repository }}:main"
