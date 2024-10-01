@@ -15,13 +15,13 @@ jobs:
     steps:
       - name: Set environment PREFIX
         run: |
-          if [ "${{ github.event.inputs.environment }}" == "development" ]; then
+          if [ "${{ inputs.environment }}" == "development" ]; then
             echo "PREFIX=DEV" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.environment }}" == "test" ]; then
+          elif [ "${{ inputs.environment }}" == "test" ]; then
             echo "PREFIX=TEST" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+          elif [ "${{ inputs.environment }}" == "staging" ]; then
             echo "PREFIX=STAG" >> $GITHUB_ENV
-          elif [ "${{ github.event.inputs.environment }}" == "production" ]; then
+          elif [ "${{ inputs.environment }}" == "production" ]; then
             echo "PREFIX=PROD" >> $GITHUB_ENV
           fi
 
