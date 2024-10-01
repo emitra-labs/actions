@@ -25,6 +25,10 @@ jobs:
             echo "PREFIX=PROD" >> $GITHUB_ENV
           fi
 
+      - name: Print PREFIX
+        run: |
+          echo "PREFIX: $PREFIX"
+
       - name: Recreate docker container
         uses: appleboy/ssh-action@v1.0.3
         with:
