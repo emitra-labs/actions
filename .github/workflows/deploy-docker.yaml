@@ -34,29 +34,9 @@ jobs:
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', env.PREFIX)] }}
           script: |
             containerName="${{ github.event.repository.name }}"
-            imageName="ghcr.io/${{ github.repository }}:main"
-            envFile="containers/${containerName}/.env"
 
-            docker rm -f $containerName
-            docker pull $imageName
+            cd containers/${containerName}
 
-            if [ -f $envFile ]; then
-              echo "Deploying with env file: $envFile"
-
-              docker run -d \
-                --name $containerName \
-                --network main \
-                --restart unless-stopped \
-                --env-file $envFile \
-                $imageName
-            else
-              echo "$envFile not found, ignoring"
-
-              docker run -d \
-                --name $containerName \
-                --network main \
-                --restart unless-stopped \
-                $imageName
-            fi
-
+            docker compose pull
+            docker compose up -d
             docker image prune -f
