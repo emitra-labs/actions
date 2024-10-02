@@ -67,6 +67,9 @@ jobs:
       - name: Move .dockerignore into project root directory
         run: mv actions/.dockerignore .
 
+      - name: Write .netrc file
+        run: echo "${{ secrets.NETRC }}" > /home/runner/.netrc
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
