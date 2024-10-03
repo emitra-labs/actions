@@ -70,6 +70,9 @@ jobs:
       - name: Write .netrc file
         run: echo "${{ secrets.NETRC }}" > /home/runner/.netrc
 
+      - name: Write ~/.npmrc file
+        run: echo "${{ secrets.NPMRC }}" >> /home/runner/.npmrc
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -82,3 +85,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           secret-files: |
             netrc=/home/runner/.netrc
+            npmrc=/home/runner/.npmrc

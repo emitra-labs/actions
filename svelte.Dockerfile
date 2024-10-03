@@ -6,6 +6,7 @@ WORKDIR /code
 COPY . .
 RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
   --mount=type=cache,target=/code/.svelte-kit,sharing=locked \
+  --mount=type=secret,id=npmrc,target=/root/.npmrc \
   pnpm install --frozen-lockfile && pnpm build
 
 FROM busybox:1.36
