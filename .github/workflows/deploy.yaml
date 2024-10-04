@@ -18,6 +18,7 @@ jobs:
       cache-map: ${{ needs.project-info.outputs.cache-map }}
       cache-path: ${{ needs.project-info.outputs.cache-path }}
       dockerfile: ${{ needs.project-info.outputs.dockerfile }}
+      environment: ${{ inputs.environment }}
     secrets: inherit
 
   deploy:

@@ -12,6 +12,9 @@ on:
       dockerfile:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
 
 env:
   REGISTRY: ghcr.io
