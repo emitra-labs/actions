@@ -20,6 +20,7 @@ env:
 jobs:
   docker-image:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     permissions:
       contents: read
       packages: write
@@ -72,6 +73,12 @@ jobs:
 
       - name: Write ~/.npmrc file
         run: echo "${{ secrets.NPMRC }}" >> /home/runner/.npmrc
+
+      - name: Write .env file
+        run: |
+          cat <<EOT >> ${{ github.workspace }}/.env
+          ${{ vars.ENV }}
+          EOT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
