@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: ghcr.io/emitra-labs/{{ .Release.Name }}:{{ default "main" .Values.deployment.image.tag }}
+          imagePullPolicy: Always
+          ports:
+            {{ if .Values.service.http }}
+            - containerPort: 3000
+            {{ end }}
+            
+            {{ if .Values.service.grpc }}
+            - containerPort: 4000
+            {{ end }}
+          
+          readinessProbe:
+            {{ if .Values.service.http }}
+            httpGet:
+              path: /
+              port: 3000
+            {{ else if .Values.service.grpc }}
+            grpc:
+              port: 4000
+            {{ end }}
+            initialDelaySeconds: 5
+
+          {{ if .Values.deployment.env }}
+          env:
+            {{- toYaml .Values.deployment.env | nindent 12 }}
+          {{ end }}
+
+          {{ if .Values.deployment.envFrom }}
+          envFrom:
+            {{- toYaml .Values.deployment.envFrom | nindent 12 }}
+          {{ end }}
+
+          {{ if .Values.deployment.volumeMounts }}
+          volumeMounts:
+            {{- toYaml .Values.deployment.volumeMounts | nindent 12 }}
+          {{ end }}
+
+      imagePullSecrets:
+        - name: ghcr-login
+
+      {{ if .Values.deployment.volumes }}
+      volumes:
+        {{- toYaml .Values.deployment.volumes | nindent 8 }}
+      {{ end }}

@@ -23,7 +23,7 @@ jobs:
 
   deploy:
     needs: [project-info, build]
-    uses: ./.github/workflows/deploy-docker.yaml
+    uses: ./.github/workflows/deploy-kubernetes.yaml
     with:
       environment: ${{ inputs.environment }}
     secrets: inherit

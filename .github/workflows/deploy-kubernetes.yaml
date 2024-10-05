@@ -1,0 +1,73 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  kubernetes:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Set environment PREFIX
+        run: |
+          if [ "${{ inputs.environment }}" == "development" ]; then
+            echo "PREFIX=DEV" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" == "test" ]; then
+            echo "PREFIX=TEST" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" == "staging" ]; then
+            echo "PREFIX=STAG" >> $GITHUB_ENV
+          elif [ "${{ inputs.environment }}" == "production" ]; then
+            echo "PREFIX=PROD" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout actions repository
+        uses: actions/checkout@v4
+        with:
+          repository: emitra-labs/actions
+          ref: main
+          path: actions
+
+      - name: Setup ZeroTier
+        uses: zerotier/github-action@v1.0.3
+        with:
+          network_id: ${{ secrets[format('{0}_ZEROTIER_NETWORK_ID', env.PREFIX)] }}
+          auth_token: ${{ secrets[format('{0}_ZEROTIER_CENTRAL_TOKEN', env.PREFIX)] }}
+
+      - name: Extract version from package.json
+        uses: sergeysova/jq-action@v2
+        id: version
+        with:
+          cmd: "jq .version package.json -r"
+
+      - uses: azure/setup-helm@v4
+
+      - name: Create ~/.kube/config file
+        run: |
+          mkdir -p /home/runner/.kube
+          echo "${{ secrets[format('{0}_KUBE_CONFIG', env.PREFIX)] }}" >> /home/runner/.kube/config
+          chmod 600 /home/runner/.kube/config
+
+      - name: Create Chart.yaml file
+        run: |
+          export APP_NAME="${{ github.event.repository.name }}"
+          export APP_VERSION="${{ steps.version.outputs.value }}"
+          envsubst < actions/.helm/Chart.template.yaml > actions/.helm/Chart.yaml
+
+      - name: Create values.yaml file
+        run: |
+          cat <<EOT >> ${{ github.workspace }}/actions/.helm/custom-values.yaml
+          ${{ vars.HELM_VALUES }}
+          EOT
+
+      - name: Deploy to Kubernetes
+        run: |
+          helm upgrade --install --history-max=1 \
+            -f actions/.helm/default-values.yaml \
+            -f actions/.helm/custom-values.yaml \
+            ${{ github.event.repository.name }} \
+            actions/.helm

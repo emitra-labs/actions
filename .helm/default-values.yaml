@@ -1,0 +1,14 @@
+deployment:
+  image:
+    tag: main
+  env: []
+  envFrom: []
+  volumes: []
+  volumeMounts: []
+
+service:
+  http: true
+  grpc: false
+
+ingress:
+  host: ""
