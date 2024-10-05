@@ -11,6 +11,8 @@ jobs:
   kubernetes:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
 
     steps:
       - name: Set environment PREFIX
@@ -24,6 +26,9 @@ jobs:
           elif [ "${{ inputs.environment }}" == "production" ]; then
             echo "PREFIX=PROD" >> $GITHUB_ENV
           fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Checkout actions repository
         uses: actions/checkout@v4
