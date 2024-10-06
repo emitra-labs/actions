@@ -63,7 +63,7 @@ jobs:
           export APP_VERSION="${{ steps.version.outputs.value }}"
           envsubst < actions/.helm/Chart.template.yaml > actions/.helm/Chart.yaml
 
-      - name: Create values.yaml file
+      - name: Create custom-values.yaml file
         run: |
           cat <<EOT >> ${{ github.workspace }}/actions/.helm/custom-values.yaml
           ${{ vars.HELM_VALUES }}
